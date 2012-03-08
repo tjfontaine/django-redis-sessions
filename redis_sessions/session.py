@@ -1,4 +1,5 @@
 import redis
+import json
 from django.utils.encoding import force_unicode
 from django.contrib.sessions.backends.base import SessionBase, CreateError
 from django.conf import settings
@@ -16,6 +17,15 @@ class SessionStore(SessionBase):
             db=getattr(settings, 'SESSION_REDIS_DB', 0),
             password=getattr(settings, 'SESSION_REDIS_PASSWORD', None)
         )
+
+    def encode(self, sess):
+        return json.dumps(sess)
+
+    def decode(self, sess):
+        try:
+            return json.loads(sess)
+        except:
+            return {}
 
     def load(self):
         try:

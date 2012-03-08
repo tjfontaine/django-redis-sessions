@@ -1,5 +1,8 @@
 django-redis-sessions
 =======================
+
+This fork uses json instead of pickle
+
 Redis database backend for your sessions
 
 
