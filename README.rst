@@ -26,19 +26,19 @@ Installation
 		
 5. Configure your expressjs app::
 
-  var RedisStore = require('connect-redis')(express);
-  app.use(express.cookieParser());
-  app.use(express.session({
-    key: 'sessionid',
-    secret: 'lulcats are uber sekrit', // This should be SECRET_KEY from settings.py
-    store: new RedisStore({
-      prefix: '',
-    }),
-    cookie: {
-      maxAge: 1209600 * 1000,
-    },
-    fingerprint: function (s) { return ''; },
-  }));
+ 	var RedisStore = require('connect-redis')(express);
+	app.use(express.cookieParser());
+	app.use(express.session({
+		key: 'sessionid',
+		secret: 'lulcats are uber sekrit', // This should be SECRET_KEY from settings.py
+		store: new RedisStore({
+			prefix: '',
+		}),
+		cookie: {
+			maxAge: 1209600 * 1000,
+		},
+		fingerprint: function (s) { return ''; },
+	}));
 
 
 I haven't done much testing beyond making sure sessions aren't immediately
