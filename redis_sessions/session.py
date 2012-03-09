@@ -1,5 +1,6 @@
 import redis
 import json
+from django.utils.crypto import get_random_string
 from django.utils.encoding import force_unicode
 from django.contrib.sessions.backends.base import SessionBase, CreateError
 from django.conf import settings
@@ -40,7 +41,7 @@ class SessionStore(SessionBase):
 
     def create(self):
         while True:
-            self.session_key = self._get_new_session_key()
+            self._session_key = self._get_new_session_key()
             try:
                 self.save(must_create=True)
             except CreateError:
@@ -72,3 +73,32 @@ class SessionStore(SessionBase):
         prefix = getattr(settings, 'SESSION_REDIS_PREFIX', None)
         key = "{}:{}".format(prefix, session_key) if prefix else session_key
         return key
+
+    def _get_new_session_key(self):
+        """
+        This matches expressjs' session key generation provided you are not
+        fingerprint'ing the request
+        """
+        import hashlib
+        import hmac
+        import base64
+        from django.http import quote
+
+        secret = getattr(settings, 'SECRET_KEY', '')
+
+        def hashit(base):
+            h = hmac.new(secret, digestmod=hashlib.sha256)
+            h.update(base)
+            d = h.digest()
+            s = base64.b64encode(d).replace('=', '')
+            return quote(s)
+
+        session_key = None
+
+        while True and not session_key:
+            base = get_random_string(32 * 3 / 4)
+            session_key = base + '.' + hashit(base)
+            if not self.exists(session_key):
+                break
+
+        return session_key
