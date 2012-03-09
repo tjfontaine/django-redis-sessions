@@ -20,11 +20,13 @@ class SessionStore(SessionBase):
         )
 
     def encode(self, sess):
-        return json.dumps(sess)
+        s = json.dumps(sess)
+        return s
 
     def decode(self, sess):
         try:
-            return json.loads(sess)
+            s = json.loads(sess)
+            return s
         except:
             return {}
 
@@ -82,7 +84,6 @@ class SessionStore(SessionBase):
         import hashlib
         import hmac
         import base64
-        from django.http import quote
 
         secret = getattr(settings, 'SECRET_KEY', '')
 
@@ -91,7 +92,7 @@ class SessionStore(SessionBase):
             h.update(base)
             d = h.digest()
             s = base64.b64encode(d).replace('=', '')
-            return quote(s)
+            return s
 
         session_key = None
 
