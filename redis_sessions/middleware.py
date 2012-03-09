@@ -46,4 +46,6 @@ class SessionMiddleware(object):
                         path=settings.SESSION_COOKIE_PATH,
                         secure=settings.SESSION_COOKIE_SECURE or None,
                         httponly=settings.SESSION_COOKIE_HTTPONLY or None)
+                request.session['cookie'] = response.cookies
+                request.session.save()
         return response
