@@ -39,7 +39,8 @@ class SessionMiddleware(object):
                 # Save the session data and refresh the client cookie.
                 request.session.save()
                 session_key = request.session.session_key
-                session_key = quote(session_key)
+                if session_key:
+                    session_key = quote(session_key)
                 response.set_cookie(settings.SESSION_COOKIE_NAME,
                         session_key, max_age=max_age,
                         expires=expires, domain=settings.SESSION_COOKIE_DOMAIN,
@@ -47,5 +48,7 @@ class SessionMiddleware(object):
                         secure=settings.SESSION_COOKIE_SECURE or None,
                         httponly=settings.SESSION_COOKIE_HTTPONLY or None)
                 request.session['cookie'] = response.cookies
+                request.session['_auth_username'] = request.user.username
+
                 request.session.save()
         return response
